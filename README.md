@@ -1,178 +1,257 @@
-Overview
 
-This project develops a machine learning-based QSAR (Quantitative Structure–Activity Relationship) framework to predict the inhibitory potency of small molecules targeting the PD-1/PD-L1 immune checkpoint pathway, a critical mechanism in cancer immune evasion.
 
-While antibody therapies exist, they are limited by cost, toxicity, and delivery challenges. This work explores data-driven discovery of small-molecule inhibitors using molecular descriptors and ensemble learning models.
 
-The study compares model performance across:
+# 🧬 Machine Learning-Based QSAR Modeling for PD-L1 Inhibitors
 
-A real-world dataset (ChEMBL) with high variability
-A curated dataset (GitHub PD-L1) with standardized measurements
+## 📌 Overview
 
-As shown in the report , dataset quality plays a central role in predictive performance.
+This project presents a **machine learning-driven QSAR (Quantitative Structure–Activity Relationship) pipeline** to predict the inhibitory potency (**pIC50**) of small molecules targeting **PD-L1**, a critical immune checkpoint in cancer immunotherapy.
 
-🎯 Objectives
-Predict PD-L1 inhibitory activity (pIC50) using molecular descriptors
-Compare performance of ensemble ML models
-Evaluate the impact of dataset quality on QSAR modeling
-Identify key molecular features driving biological activity
-📂 Project Structure
+The workflow integrates:
+
+* Multi-source molecular feature engineering
+* Ensemble machine learning models
+* SHAP-based interpretability
+
+
+
+## 🎯 Objectives
+
+* Predict **PD-L1 inhibitory activity (pIC50)** from molecular structure
+* Compare multiple **feature representations** (descriptors + fingerprints)
+* Evaluate different **ensemble ML models**
+* Apply **SHAP** for feature importance and interpretability
+* Build a **reproducible drug discovery pipeline**
+
+---
+
+## 🧪 Dataset
+
+* Source: **ChEMBL database**
+* Initial size: ~1,770 compounds
+* Target: **PD-L1 (CD274)**
+* Label: **pIC50 (−log10 IC50)**
+
+### Data Preprocessing
+
+* Removed duplicate molecules (SMILES-based)
+* Validated chemical structures using RDKit
+* Filtered PD-L1-specific records
+* Removed missing values
+
+📊 Final dataset: Clean, curated, and ready for modeling 
+
+---
+
+## ⚙️ Feature Engineering
+
+Four types of molecular features were generated:
+
+### 1. RDKit Descriptors
+
+* Molecular weight, LogP, TPSA
+* Hydrogen bond donors/acceptors
+* Topological indices
+
+### 2. Mordred Descriptors
+
+* ~1800 2D descriptors
+* Structural, electronic, geometric properties
+
+### 3. MACCS Keys
+
+* 167-bit structural fingerprints
+* Interpretable substructure patterns
+
+### 4. Morgan Fingerprints (ECFP4)
+
+* 1024-bit circular fingerprints
+* Captures local chemical environments
+
+---
+
+### 🔗 Feature Set Configurations
+
+* Descriptors only (RDKit + Mordred)
+* MACCS only
+* Morgan only
+* MACCS + Morgan
+* All features combined
+
+📌 Best performance achieved with **combined feature sets** 
+
+---
+
+## 🤖 Machine Learning Models
+
+Three ensemble models were trained:
+
+| Model                   | Type              | Key Strength                      |
+| ----------------------- | ----------------- | --------------------------------- |
+| Random Forest           | Bagging           | Robust, reduces variance          |
+| Gradient Boosting (GBM) | Boosting          | Sequential learning               |
+| XGBoost                 | Advanced Boosting | Regularization + high performance |
+
+### Train/Test Split
+
+* 80% training / 20% testing
+* Fixed random seed for reproducibility
+
+---
+
+## 📊 Evaluation Metrics
+
+* **RMSE** – penalizes large errors
+* **MAE** – average prediction error
+* **R²** – variance explained
+
+📌 Benchmark:
+
+* R² ≥ 0.60 → acceptable QSAR model
+* R² ≥ 0.70 → strong model 
+
+---
+
+## 🚀 Key Results
+
+### 🥇 Best Model
+
+* **XGBoost (All Features + SHAP selection)**
+* **R² ≈ 0.69**
+* Competitive with literature benchmarks 
+
+---
+
+### 📈 Performance Insights
+
+* Feature fusion > single feature sets
+* Morgan fingerprints outperform MACCS alone
+* XGBoost consistently best across configurations
+
+📊 As shown in *Table I (page 6)*, combined features significantly improved model performance.
+
+---
+
+## 🔍 SHAP Interpretability
+
+SHAP (Shapley Additive Explanations) was used to:
+
+* Identify **top predictive features**
+* Explain model decisions
+* Improve interpretability
+
+### 🔑 Key Findings
+
+* Hydrophobicity (LogP-related descriptors) strongly influences activity
+* Aromatic structures and ring systems are critical
+* Molecular topology impacts binding affinity
+
+📊 *Beeswarm plot (page 8)* shows how features shift predictions 
+
+---
+
+### 🎯 Feature Selection
+
+* Top **50 SHAP-ranked features** selected
+* Reduced dimensionality from thousands → 50
+* Maintained or improved performance
+
+📌 Result: Better interpretability + efficiency
+
+---
+
+## 📉 Error Analysis
+
+### Observations:
+
+* Higher errors at extreme pIC50 values
+* Model performs best in mid-range (5.5–7.0)
+* Outliers include:
+
+  * Rare molecular scaffolds
+  * Highly potent/weak compounds
+
+📊 *Scatter plot (page 8)* shows prediction alignment with true values 
+
+---
+
+## 💡 Key Insights
+
+* Combining descriptors + fingerprints is critical
+* XGBoost is highly effective for QSAR tasks
+* SHAP provides **chemically meaningful interpretation**
+* Small feature subsets can retain predictive power
+
+---
+
+## 🧠 Business / Scientific Impact
+
+This pipeline:
+
+* Accelerates **early-stage drug discovery**
+* Supports **PD-L1 inhibitor design**
+* Bridges **AI predictions with medicinal chemistry insights**
+
+---
+
+## 🛠️ Tech Stack
+
+* Python
+* RDKit
+* Mordred
+* Scikit-learn
+* XGBoost
+* SHAP
+* Pandas / NumPy / Matplotlib
+
+---
+
+## 🔮 Future Work
+
+* Incorporate **3D molecular descriptors**
+* Use **Graph Neural Networks (GNNs)**
+* Expand dataset size for better generalization
+* Ensemble models (stacking RF + XGB)
+
+---
+
+## 📂 Project Structure (Suggested)
+
+```
 ├── data/
-│   ├── chembl_dataset.csv
-│   ├── github_pdl1_dataset.csv
-│
 ├── notebooks/
-│   ├── data_preprocessing.ipynb
-│   ├── descriptor_generation.ipynb
-│   ├── model_training.ipynb
-│
 ├── src/
 │   ├── preprocessing.py
-│   ├── descriptors.py
+│   ├── feature_engineering.py
 │   ├── models.py
-│
+│   └── shap_analysis.py
 ├── results/
-│   ├── figures/
-│   ├── performance_tables.csv
-│
 ├── README.md
 └── requirements.txt
-🧪 Dataset Description
-1. ChEMBL Dataset
-Source: Public bioactivity database
-Initial records: ~1770 IC50 values
-Final processed dataset: 738 unique molecules
-Characteristics:
-High variability
-Experimental noise
-Real-world complexity
-2. GitHub PD-L1 Dataset
-Source: Curated dataset from patent-derived compounds
-Size: ~2044 molecules
-Characteristics:
-Cleaner distribution
-More consistent activity values
-Easier for models to learn
-⚙️ Data Preprocessing
+```
 
-Key steps:
+---
 
-Convert IC50 → pIC50 (log transformation)
-Remove duplicates using SMILES
-Aggregate repeated measurements using median
-Handle missing values using median imputation
-Standardize molecular structures
+## 👤 Authors
 
-This transformation reduces skewness and stabilizes variance, improving regression performance .
+* **Binh Diep**
+* Sai Charitha Gopa
+* Rishik Kondura
 
-🧬 Descriptor Generation
+Long Island University – Spring 2026
 
-Descriptors were generated using:
+---
 
-RDKit → 217 descriptors
-Mordred → 1,613 descriptors
-Feature Engineering Pipeline:
-Combine descriptors → 1830 features
-Remove:
-Missing / infinite values
+## 📚 References
 
-80% zero features
+See full IEEE paper for detailed references:
 
-Apply variance filter (<0.1)
-Remove highly correlated features (>0.9)
 
-👉 Final feature matrix: (738, 161)
+---
 
-Descriptors capture:
+## ⭐ Key Takeaway
 
-Molecular weight
-Hydrophobicity (LogP)
-Surface area
-Electronic properties
-🤖 Models Used
+> Combining **multi-feature molecular representations + XGBoost + SHAP interpretability** creates a powerful and practical QSAR pipeline for real-world drug discovery.
 
-Three regression models were trained:
-
-Model	Description
-Random Forest	Robust to noise, good baseline
-Gradient Boosting	Sequential learning, reduces bias
-XGBoost	Optimized boosting with regularization
-Training Setup:
-Train/Test split: 80/20
-Libraries: scikit-learn, xgboost
-Environment: Google Colab
-📊 Evaluation Metrics
-R² (Coefficient of Determination) → model fit
-RMSE → penalizes large errors
-MAE → average prediction error
-📈 Results
-ChEMBL Dataset (Noisy)
-Model	RMSE	MAE	R²
-Random Forest	0.72	0.524	0.476
-Gradient Boosting	0.732	0.512	0.459
-XGBoost	0.737	0.531	0.452
-
-👉 Moderate performance due to dataset variability
-
-GitHub Dataset (Curated)
-Model	RMSE	MAE	R²
-Random Forest	0.36	0.265	0.639
-Gradient Boosting	0.368	0.270	0.625
-XGBoost	0.356	0.257	0.648
-
-👉 Significant improvement due to cleaner data
-
-🔍 Key Insights
-Dataset quality > model selection
-XGBoost performs best on curated datasets
-Random Forest is more stable on noisy data
-Small subset of descriptors drives most predictions
-
-Top contributing features:
-
-Hydrophobicity (MolLogP)
-Surface area (VSA descriptors)
-Electronic properties (BCUT descriptors)
-📉 Model Comparison to Literature
-This study (best): R² ≈ 0.65
-Tong et al.: R² ≈ 0.83
-
-👉 Gap highlights need for:
-
-Better feature engineering
-Fingerprint-based representations
-Model optimization
-🚀 Future Work
-Incorporate Morgan fingerprints
-Compare with MACCS keys
-Apply SHAP for interpretability
-Improve hyperparameter tuning
-Explore deep learning models
-🧑‍💻 Technologies Used
-Python
-RDKit
-Mordred
-Scikit-learn
-XGBoost
-Pandas / NumPy
-Matplotlib
-👥 Authors
-Binh Diep – Data preprocessing, modeling
-Sai Charitha Gopa – Descriptor generation, analysis
-Rishik Kondura – Literature review, documentation
-📚 References
-Tong et al., Discovery of Novel PD-L1 Inhibitors Using Machine Learning
-ChEMBL Database (2024)
-Kuttappan et al., ML-assisted virtual screening
-💡 How to Run
-# Clone repo
-git clone https://github.com/yourusername/pdl1-qsar
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run notebooks
-jupyter notebook
-🧠 Final Takeaway
-
+---
 
